@@ -1,0 +1,57 @@
+component hal_sercans;
+pin in float in_x;
+pin in float in_y;
+pin in float in_z;
+pin out float out;
+function _;
+license "GPL";
+;;
+#include <stdint.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <stdio.h>
+
+#define SHMSZ     32
+
+//    int shmid;
+//    key_t key;
+//    int *shm;
+
+	struct axis {
+	  int x;
+	  int y;
+	  int z;
+	};
+
+	int shmid;
+	key_t key;
+	struct axis *shm;
+
+    /*
+     * We'll name our shared memory segment
+     * "5678".
+     */
+    key = 5678;
+
+    /*
+     * Create the segment.
+     */
+    shmid = shmget(key, sizeof(struct axis), IPC_CREAT | 0666);
+
+    /*
+     * Now we attach the segment to our data space.
+     */
+    shm = shmat(shmid, NULL, 0);
+    
+    /*
+     * Finally, we wait until the other process 
+     * changes the first character of our memory
+     * to '*', indicating that it has read what 
+     * we put there.
+     */
+    //*shm = 1000000*in;
+    
+     shm->x = 1000000*in_x;  /* Setze Inhalt/Geschwindigkeiten auf Null*/
+     shm->y = 1000000*in_y;
+     shm->z = 1000000*in_z;
+   
